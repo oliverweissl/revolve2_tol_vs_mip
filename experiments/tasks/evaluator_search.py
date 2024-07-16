@@ -62,11 +62,7 @@ class EvaluatorSearch(Evaluator):
 
         # Calculate the xy displacements.
         total_rotations = [
-<<<<<<< HEAD
             abs(fitness_functions.total_rotation([state.get_modular_robot_simulation_state(robot) for state in states]))
-=======
-            fitness_functions.total_rotation([state.get_modular_robot_simulation_state(robot) for state in states])
->>>>>>> 259b226 (better structure)
             for robot, states in zip(robots, scene_states)
         ]
 

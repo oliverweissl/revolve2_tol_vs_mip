@@ -17,6 +17,10 @@ from revolve2.experimentation.optimization.ea import population_management, sele
 from revolve2.experimentation.rng import make_rng, seed_from_time
 from revolve2.ci_group.morphological_novelty_metric import get_novelty_from_population
 from ..tasks import EvaluatorObjectManipulation, EvaluatorLocomotion, EvaluatorSearch
+<<<<<<< HEAD
+=======
+
+>>>>>>> b00b407 (tested, ready for exprimentation)
 
 def mutate_parents(
         rng: np.random.Generator,

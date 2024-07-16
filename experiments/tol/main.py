@@ -279,4 +279,10 @@ def main(objective: str) -> None:
 if __name__ == "__main__":
     sys.path.append("..")
     objective = sys.argv[1]
+<<<<<<< HEAD
     main(objective)
+=======
+    main(objective)
+
+
+>>>>>>> b00b407 (tested, ready for exprimentation)

@@ -1,11 +1,7 @@
 """Evaluator class."""
 
-<<<<<<< HEAD
 from revolve2.ci_group import fitness_functions, terrains
 from revolve2.ci_group.interactive_objects import Ball
-=======
-from revolve2.ci_group import fitness_functions, terrains, interactive_objects
->>>>>>> 259b226 (better structure)
 from revolve2.ci_group.simulation_parameters import make_standard_batch_parameters
 from revolve2.modular_robot import ModularRobot
 from revolve2.modular_robot_simulation import (
@@ -55,16 +51,10 @@ class EvaluatorObjectManipulation(Evaluator):
         """
         # Create the scenes.
 
-<<<<<<< HEAD
         scenes, balls = [], []
         for robot in robots:
             ball = Ball(radius=0.1, mass=0.1, pose=Pose(position=Vector3([0.35, 0.35, 0.0])))
             balls.append(ball)
-=======
-        scenes = []
-        ball = interactive_objects.Ball(radius=0.1, mass=0.1, pose=Pose(Vector3([-0.5, 0.5, 0])))
-        for robot in robots:
->>>>>>> 259b226 (better structure)
             scene = ModularRobotScene(terrain=self._terrain)
             scene.add_robot(robot)
             scene.add_interactive_object(ball)
@@ -83,10 +73,6 @@ class EvaluatorObjectManipulation(Evaluator):
                 states[0].get_interactive_object_simulation_state(ball),
                 states[-1].get_interactive_object_simulation_state(ball),
             )
-<<<<<<< HEAD
-            for states, ball in zip(scene_states, balls)
-=======
-            for robot, states in zip(robots, scene_states)
->>>>>>> 259b226 (better structure)
-        ]
+            for states, ball in zip(scene_states, balls)]
+
         return xy_displacements
