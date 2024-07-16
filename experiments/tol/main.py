@@ -280,5 +280,3 @@ if __name__ == "__main__":
     sys.path.append("..")
     objective = sys.argv[1]
     main(objective)
-
-
