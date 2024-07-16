@@ -29,16 +29,15 @@ from .revde_learner import DifferentialEvolution
 
 N_GEN = 5
 INITIAL_POPULATION_INNER_SIZE = 10
-RNG = make_rng_time_seed()
 
 
-def get_robot_from_x(body: Body, genome: npt.NDArray, struct: CpgNetworkStructure) -> ModularRobot:
-    brain = BrainCpgNetworkNeighborRandom(body=body, rng=RNG)
+def get_robot_from_x(body: Body, genome: npt.NDArray, struct: CpgNetworkStructure, rng: np.random.Generator) -> ModularRobot:
+    brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
     brain._weight_matrix = struct.make_connection_weights_matrix_from_params(genome.tolist())
     return ModularRobot(body=body, brain=brain)
 
 
-def get_fitnesses(robots: list[ModularRobot], evaluator: Evaluator) -> tuple[list[float], list[float]]:
+def get_fitnesses(robots: list[ModularRobot], evaluator: Evaluator, rng: np.random.Generator) -> list[float]:
     amt_ind = len(robots)
     structs: list[CpgNetworkStructure] = [None] * amt_ind
     des: list[DifferentialEvolution] = [None] * amt_ind
@@ -54,7 +53,7 @@ def get_fitnesses(robots: list[ModularRobot], evaluator: Evaluator) -> tuple[lis
     for _ in range(N_GEN):
         test_robots = []
         for tmp, de, struct in zip(robots, des, structs):
-            test_robots.extend([get_robot_from_x(tmp.body, genome, struct) for genome in de.x_current])
+            test_robots.extend([get_robot_from_x(tmp.body, genome, struct, rng) for genome in de.x_current])
 
         all_f = np.array_split(-np.array(evaluator.evaluate(test_robots)), amt_ind)
         j = 0
@@ -178,7 +177,7 @@ def run_experiment(dbengine: Engine, evaluator: Evaluator) -> None:
     # Evaluate the initial population.
     logging.info("Evaluating initial population.")
     initial_robots = [genotype.develop() for genotype in initial_genotypes]
-    initial_fitnesses = get_fitnesses(initial_robots, evaluator)
+    initial_fitnesses = get_fitnesses(initial_robots, evaluator, rng)
     initial_novelty = get_novelty_from_population(initial_robots)
 
     # Create a population of individuals, combining genotype with fitness.
@@ -219,7 +218,7 @@ def run_experiment(dbengine: Engine, evaluator: Evaluator) -> None:
             for parent1_i, parent2_i in parents
         ]
         offspring_robots = [genotype.develop() for genotype in offspring_genotypes]
-        offspring_fitnesses = get_fitnesses(offspring_robots, evaluator)
+        offspring_fitnesses = get_fitnesses(offspring_robots, evaluator, rng)
         offspring_novelty = get_novelty_from_population(offspring_robots)
 
         # Make an intermediate offspring population.
@@ -280,5 +279,3 @@ if __name__ == "__main__":
     sys.path.append("..")
     objective = sys.argv[1]
     main(objective)
-
-

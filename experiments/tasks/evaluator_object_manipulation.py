@@ -73,6 +73,6 @@ class EvaluatorObjectManipulation(Evaluator):
                 states[0].get_interactive_object_simulation_state(ball),
                 states[-1].get_interactive_object_simulation_state(ball),
             )
-            for states, ball in zip(scene_states, balls)
-        ]
+            for states, ball in zip(scene_states, balls)]
+
         return xy_displacements

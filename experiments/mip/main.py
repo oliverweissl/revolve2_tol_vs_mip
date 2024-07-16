@@ -18,7 +18,6 @@ from revolve2.experimentation.rng import make_rng, seed_from_time
 from revolve2.ci_group.morphological_novelty_metric import get_novelty_from_population
 from ..tasks import EvaluatorObjectManipulation, EvaluatorLocomotion, EvaluatorSearch
 
-
 def mutate_parents(
         rng: np.random.Generator,
         population: Population,
