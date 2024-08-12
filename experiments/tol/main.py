@@ -129,27 +129,12 @@ def select_survivors(
     )
 
 
-def find_best_robot(
-        current_best: Individual | None, population: list[Individual]
-) -> Individual:
-    """
-    Return the best robot between the population and the current best individual.
-
-    :param current_best: The current best individual.
-    :param population: The population.
-    :returns: The best individual.
-    """
-    return max(
-        population + [] if current_best is None else [current_best],
-        key=lambda x: x.fitness,
-    )
-
-
 def run_experiment(dbengine: Engine, evaluator: Evaluator) -> None:
     """
     Run an experiment.
 
     :param dbengine: An opened database with matching initialize database structure.
+    :param evaluator: The evaluator used.
     """
     logging.info("----------------")
     logging.info("Start experiment")
