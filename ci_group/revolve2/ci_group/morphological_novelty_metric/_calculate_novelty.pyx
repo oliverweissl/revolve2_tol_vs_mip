@@ -78,4 +78,5 @@ cpdef ndarray[double, ndim=1] calculate_novelty(ndarray[long, ndim=3, mode="c"] 
             score = wasserstein_distance(supply, capacity , histogram_size)
             novelty_scores[i] += score
             novelty_scores[j] += score
+    novelty_scores /= 2
     return novelty_scores

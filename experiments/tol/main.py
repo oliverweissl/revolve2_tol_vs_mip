@@ -118,8 +118,24 @@ def select_survivors(
     )
 
     return Population(
-        individuals=[original_population.individuals[i] for i in original_survivors]
-                    + [offspring_population.individuals[i] for i in offspring_survivors]
+        individuals=[
+                        Individual(
+                            genotype=original_population.individuals[i].genotype,
+                            fitness=original_population.individuals[i].fitness,
+                            age=original_population.individuals[i].age,
+                            novelty=original_population.individuals[i].novelty,
+                        )
+                        for i in original_survivors
+                    ]
+                    + [
+                        Individual(
+                            genotype=offspring_population.individuals[i].genotype,
+                            fitness=offspring_population.individuals[i].fitness,
+                            age=offspring_population.individuals[i].age,
+                            novelty=offspring_population.individuals[i].novelty,
+                        )
+                        for i in offspring_survivors
+                    ]
     )
 
 
@@ -202,7 +218,6 @@ def run_experiment(dbengine: Engine, evaluator: Evaluator) -> None:
     # Start the actual optimization process.
     logging.info("Start optimization process.")
     while generation.generation_index < config.NUM_GENERATIONS:
-        print(generation.generation_index + 1)
         logging.info(
             f"Generation {generation.generation_index + 1} / {config.NUM_GENERATIONS}."
         )
@@ -262,7 +277,7 @@ def main(objective: str) -> None:
 
     # Run the experiment several times.
     for _ in range(config.NUM_REPETITIONS):
-        # Intialize the evaluator that will be used to evaluate robots.
+        # Initialize the evaluator that will be used to evaluate robots.
         match objective:
             case "l":
                 evaluator = EvaluatorLocomotion(headless=True, num_simulators=config.NUM_SIMULATORS)
