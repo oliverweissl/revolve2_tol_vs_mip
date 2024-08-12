@@ -3,19 +3,19 @@ from typing import Callable, TypeVar
 import numpy as np
 import numpy.typing as npt
 
-TGenotype = TypeVar("TGenotype")
-TValues = TypeVar("TValues")
+Genotype = TypeVar("Genotype")
+Values = TypeVar("Values")
 
 
 def steady_state_morphological_innovation_protection(
-    old_genotypes: list[TGenotype],
-    old_fitnesses: list[float],
-    old_ages: list[int],
-    new_genotypes: list[TGenotype],
-    new_fitnesses: list[float],
-    new_ages: list[int],
+    old_genotypes: list[Genotype],
+    old_fitnesses: list[Values],
+    old_ages: list[Values],
+    new_genotypes: list[Genotype],
+    new_fitnesses: list[Values],
+    new_ages: list[Values],
     selection_fun: Callable[
-        [list[list[TValues]], list[bool], int], npt.NDArray[np.int_]
+        [list[list[Values]], list[bool], int], npt.NDArray[np.int_]
     ],
 ) -> tuple[list[int], list[int]]:
     """
@@ -35,7 +35,11 @@ def steady_state_morphological_innovation_protection(
 
     population_size = len(old_genotypes)
 
-    selection = selection_fun([old_fitnesses + new_fitnesses, old_ages + new_ages], [False, True], population_size)
+    selection = selection_fun(
+        [old_fitnesses + new_fitnesses, old_ages + new_ages],
+        [False, True],
+        population_size,
+    )
 
     selected_old = [s for s in selection if s < len(old_fitnesses)]
     selected_new = [
