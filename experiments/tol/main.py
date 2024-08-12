@@ -15,13 +15,8 @@ from sqlalchemy.orm import Session
 from revolve2.experimentation.database import OpenMethod, open_database_sqlite
 from revolve2.experimentation.logging import setup_logging
 from revolve2.experimentation.optimization.ea import population_management, selection
-from revolve2.experimentation.rng import make_rng, seed_from_time, make_rng_time_seed
-from revolve2.modular_robot.brain.cpg import BrainCpgNetworkNeighborRandom, CpgNetworkStructure
-from revolve2.modular_robot.brain.cpg._make_cpg_network_structure_neighbor import \
-    active_hinges_to_cpg_network_structure_neighbor
-
+from revolve2.experimentation.rng import make_rng, seed_from_time
 from revolve2.modular_robot import ModularRobot
-from revolve2.modular_robot.body.base import ActiveHinge, Body
 from revolve2.ci_group.morphological_novelty_metric import get_novelty_from_population
 from ..tasks import EvaluatorSearch, EvaluatorLocomotion, EvaluatorObjectManipulation
 
@@ -31,36 +26,31 @@ N_GEN = 5
 INITIAL_POPULATION_INNER_SIZE = 10
 
 
-def get_robot_from_x(body: Body, genome: npt.NDArray, struct: CpgNetworkStructure, rng: np.random.Generator) -> ModularRobot:
-    brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
-    brain._weight_matrix = struct.make_connection_weights_matrix_from_params(genome.tolist())
-    return ModularRobot(body=body, brain=brain)
+def transplant_brain(robot: ModularRobot, weights: npt.NDArray) -> ModularRobot:
+    robot = robot.copy()
+    robot.brain._weight_matrix = weights
+    return robot
 
 
-def get_fitnesses(robots: list[ModularRobot], evaluator: Evaluator, rng: np.random.Generator) -> list[float]:
+def get_fitness(robots: list[ModularRobot], evaluator: Evaluator) -> list[float]:
     amt_ind = len(robots)
-    structs: list[CpgNetworkStructure] = [None] * amt_ind
     des: list[DifferentialEvolution] = [None] * amt_ind
 
-    i = 0
-    for tmp in robots:
-        struct, _ = active_hinges_to_cpg_network_structure_neighbor(tmp.body.find_modules_of_type(ActiveHinge))
-        structs[i] = struct
-        des[i] = DifferentialEvolution(x0=np.random.rand(INITIAL_POPULATION_INNER_SIZE, struct.num_connections),
-                                       population_size=INITIAL_POPULATION_INNER_SIZE)
-        i += 1
+    for i, robot in enumerate(robots):
+        des[i] = DifferentialEvolution(
+            x0=np.random.rand(INITIAL_POPULATION_INNER_SIZE, robot.brain._weight_matrix.size) * robot.brain._weight_matrix,
+            population_size=INITIAL_POPULATION_INNER_SIZE
+        )
 
     for _ in range(N_GEN):
         test_robots = []
-        for tmp, de, struct in zip(robots, des, structs):
-            test_robots.extend([get_robot_from_x(tmp.body, genome, struct, rng) for genome in de.x_current])
+        for robot, de in zip(robots, des):
+            test_robots.extend([transplant_brain(robot, weights) for weights in de.x_current])
 
         all_f = np.array_split(-np.array(evaluator.evaluate(test_robots)), amt_ind)
-        j = 0
-        for de in des:
+        for j, de in enumerate(des):
             de.f = all_f[j]
             de.new_pop()
-            j += 1
 
     return [-de.f_best_so_far for de in des]
 
@@ -159,7 +149,7 @@ def run_experiment(dbengine: Engine, evaluator: Evaluator) -> None:
     """
     Run an experiment.
 
-    :param dbengine: An openened database with matching initialize database structure.
+    :param dbengine: An opened database with matching initialize database structure.
     """
     logging.info("----------------")
     logging.info("Start experiment")
@@ -193,7 +183,7 @@ def run_experiment(dbengine: Engine, evaluator: Evaluator) -> None:
     # Evaluate the initial population.
     logging.info("Evaluating initial population.")
     initial_robots = [genotype.develop() for genotype in initial_genotypes]
-    initial_fitnesses = get_fitnesses(initial_robots, evaluator, rng)
+    initial_fitnesses = get_fitness(initial_robots, evaluator)
     initial_novelty = get_novelty_from_population(initial_robots)
 
     # Create a population of individuals, combining genotype with fitness.
@@ -233,7 +223,7 @@ def run_experiment(dbengine: Engine, evaluator: Evaluator) -> None:
             for parent1_i, parent2_i in parents
         ]
         offspring_robots = [genotype.develop() for genotype in offspring_genotypes]
-        offspring_fitnesses = get_fitnesses(offspring_robots, evaluator, rng)
+        offspring_fitnesses = get_fitness(offspring_robots, evaluator)
         offspring_novelty = get_novelty_from_population(offspring_robots)
 
         # Make an intermediate offspring population.

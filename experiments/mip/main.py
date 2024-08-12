@@ -39,9 +39,7 @@ def mutate_parents(
     offspring_genotypes = [None] * offspring_size
     ages = [None] * offspring_size
 
-    i = 0
-
-    for individual in population.individuals:
+    for i, individual in enumerate(population.individuals):
         if rng.choice([True, False]):
             """Mutate body."""
             offspring_genotypes[i] = individual.genotype.mutate(innov_db_body=innov_db_body,
@@ -52,7 +50,6 @@ def mutate_parents(
             brain = individual.genotype.mutate_brain(innov_db=innov_db_brain, rng=rng)
             offspring_genotypes[i] = Genotype(body=individual.genotype.body, brain=brain.brain)
             ages[i] = individual.age
-        i += 1
 
     offspring_robots = [genotype.develop() for genotype in offspring_genotypes]
     offspring_fitnesses = evaluator.evaluate(offspring_robots)
@@ -243,7 +240,7 @@ def main(objective: str) -> None:
 
     # Run the experiment several times.
     for _ in range(config.NUM_REPETITIONS):
-        # Intialize the evaluator that will be used to evaluate robots.
+        # Initialize the evaluator that will be used to evaluate robots.
         match objective:
             case "l":
                 evaluator = EvaluatorLocomotion(headless=True, num_simulators=config.NUM_SIMULATORS)

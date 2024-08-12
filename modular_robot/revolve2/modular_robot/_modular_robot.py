@@ -1,3 +1,4 @@
+from __future__ import annotations
 import uuid
 
 from .body.base import Body
@@ -31,3 +32,11 @@ class ModularRobot:
         :returns: The uuid.
         """
         return self._uuid
+
+    def __copy__(self) -> ModularRobot:
+        """
+        Makes a copy of the ModularRobot.
+
+        :returns: The copy of the ModularRobot.
+        """
+        return type(self)(body=self.body, brain=self.brain)
