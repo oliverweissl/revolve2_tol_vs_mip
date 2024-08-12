@@ -74,7 +74,7 @@ def select_parents(
                 2,
                 [individual.genotype for individual in population.individuals],
                 [individual.fitness for individual in population.individuals],
-                lambda _, fitnesses: selection.tournament(rng, fitnesses, k=1),
+                lambda _, fitnesses: selection.tournament(rng, fitnesses, k=2),
             )
             for _ in range(offspring_size)
         ],
