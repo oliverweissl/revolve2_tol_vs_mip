@@ -8,6 +8,7 @@ import numpy as np
 from typing_extensions import Self
 
 from revolve2.modular_robot.body.v2 import BodyV2
+
 from ..._multineat_genotype_pickle_wrapper import MultineatGenotypePickleWrapper
 from ..._multineat_rng_from_random import multineat_rng_from_random
 from ..._random_multineat_genotype import random_multineat_genotype
