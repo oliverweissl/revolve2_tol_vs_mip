@@ -10,7 +10,6 @@ from revolve2.experimentation.database import OpenMethod, open_database_sqlite
 from revolve2.experimentation.logging import setup_logging
 
 
-
 def main() -> None:
     """Run the program."""
     setup_logging()
