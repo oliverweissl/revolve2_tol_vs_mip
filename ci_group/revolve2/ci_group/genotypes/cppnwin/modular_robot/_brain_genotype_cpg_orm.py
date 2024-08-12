@@ -8,6 +8,7 @@ from sqlalchemy.engine import Connection
 from typing_extensions import Self
 
 from revolve2.modular_robot.body.base import Body
+
 from .._multineat_rng_from_random import multineat_rng_from_random
 from .._random_multineat_genotype import random_multineat_genotype
 from ._brain_cpg_network_neighbor import BrainCpgNetworkNeighbor

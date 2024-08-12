@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 import multineat
 import numpy as np
+
 from typing_extensions import Self
 
 from revolve2.modular_robot.body.v2 import BodyV2
