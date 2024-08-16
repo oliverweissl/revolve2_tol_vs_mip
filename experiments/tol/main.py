@@ -38,7 +38,7 @@ def get_fitness(robots: list[ModularRobot], evaluator: Evaluator) -> list[float]
 
     for i, robot in enumerate(robots):
         des[i] = DifferentialEvolution(
-            x0=np.random.rand(INITIAL_POPULATION_INNER_SIZE, robot.brain._weight_matrix.size) * robot.brain._weight_matrix,
+            x0=np.random.rand(INITIAL_POPULATION_INNER_SIZE, robot.brain._weight_matrix.shape) * robot.brain._weight_matrix,
             population_size=INITIAL_POPULATION_INNER_SIZE
         )
 
