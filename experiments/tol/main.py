@@ -4,6 +4,7 @@ import logging
 
 from . import config
 import multineat
+from copy import copy
 import numpy as np
 import numpy.typing as npt
 from experiments.data_structures import Base, Experiment, Genotype, Generation, Individual, Population
@@ -27,7 +28,7 @@ INITIAL_POPULATION_INNER_SIZE = 10
 
 
 def transplant_brain(robot: ModularRobot, weights: npt.NDArray) -> ModularRobot:
-    robot = robot.copy()
+    robot = copy(robot)
     robot.brain._weight_matrix = weights
     return robot
 
