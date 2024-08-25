@@ -39,9 +39,7 @@ def mutate_parents(
     offspring_genotypes = [None] * offspring_size
     ages = [None] * offspring_size
 
-    i = 0
-
-    for individual in population.individuals:
+    for i, individual in enumerate(population.individuals):
         if rng.choice([True, False]):
             """Mutate body."""
             offspring_genotypes[i] = individual.genotype.mutate(innov_db_body=innov_db_body,
@@ -52,7 +50,6 @@ def mutate_parents(
             brain = individual.genotype.mutate_brain(innov_db=innov_db_brain, rng=rng)
             offspring_genotypes[i] = Genotype(body=individual.genotype.body, brain=brain.brain)
             ages[i] = individual.age
-        i += 1
 
     offspring_robots = [genotype.develop() for genotype in offspring_genotypes]
     offspring_fitnesses = evaluator.evaluate(offspring_robots)
@@ -116,27 +113,12 @@ def select_survivors(
     )
 
 
-def find_best_robot(
-        current_best: Individual | None, population: list[Individual]
-) -> Individual:
-    """
-    Return the best robot between the population and the current best individual.
-
-    :param current_best: The current best individual.
-    :param population: The population.
-    :returns: The best individual.
-    """
-    return max(
-        population + [] if current_best is None else [current_best],
-        key=lambda x: x.fitness,
-    )
-
-
 def run_experiment(dbengine: Engine, evaluator: Evaluator) -> None:
     """
     Run an experiment.
 
-    :param dbengine: An openened database with matching initialize database structure.
+    :param dbengine: An opened database with matching initialize database structure.
+    :param evaluator: The evaluator used.
     """
     logging.info("----------------")
     logging.info("Start experiment")
@@ -243,7 +225,7 @@ def main(objective: str) -> None:
 
     # Run the experiment several times.
     for _ in range(config.NUM_REPETITIONS):
-        # Intialize the evaluator that will be used to evaluate robots.
+        # Initialize the evaluator that will be used to evaluate robots.
         match objective:
             case "l":
                 evaluator = EvaluatorLocomotion(headless=True, num_simulators=config.NUM_SIMULATORS)
